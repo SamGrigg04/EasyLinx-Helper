@@ -1,15 +1,16 @@
 from flask import Flask, request, jsonify
-import csv
 import datetime
+import csv
+import requests
 
 app = Flask(__name__)
 
-# Reads a testing csv simulating an API call
+# Reads a testing csv simulating the data from Zoho
 old_clients = {}
 with open('old_clients.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        old_clients[row['clientID']] = row['carrier']
+        old_clients[row['clientId']] = row['carrier']
 
 
 # Tells Flask that the funciton handles requests to /webhook URL
@@ -23,9 +24,9 @@ def webhook():
     carrier = data.get("carrier")
     label = data.get("label")
 
-    # Check if the client exists in the old system
+    # If they are in the old system
     if client_id in old_clients:
-        # If they exist but now have a different carrier, flag as renewal
+        # If they have a different carrier in the old system
         if old_clients[client_id] != carrier:
             decision = "renewal (carrier changed)"
         else:
@@ -33,7 +34,7 @@ def webhook():
     else:
         decision = "new business"
 
-    # Log result with timestamp
+    # Log result
     timestamp = datetime.datetime.now().isoformat()
     print(f"{timestamp} - Client {client_id}: Original label = {label}, Classified = {decision}")
 
