@@ -4,6 +4,7 @@ import datetime
 
 app = Flask(__name__)
 
+# Reads a testing csv simulating an API call
 old_clients = {}
 with open('old_clients.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
